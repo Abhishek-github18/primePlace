@@ -20,6 +20,16 @@ mongoose
 const app = express();
 app.use(express.json());
 
+app.use((error, req, res, next)=>{
+    const statusCode = error.status || 500;
+    const message = error.message || "Internal server error";
+
+    res.status(statusCode).json({
+        status: false,
+        message
+    })
+})
+
 app.use("/api/health", healthRouter);
 app.use("/api/auth", authRouter);
 

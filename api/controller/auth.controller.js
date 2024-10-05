@@ -1,11 +1,11 @@
 import bcrypt from "bcryptjs";
 import User from "../models/user.model.js";
-export const signup = async (req, res) => {
-  const salt = process.env.Salt;
-  const { username, email, password } = req.body;
-  const hashedPassword = bcrypt.hashSync(password, 2);
-
+export const signup = async (req, res, next) => {
   try {
+    const salt = process.env.Salt;
+    const { username, email, password } = req.body;
+    const hashedPassword = bcrypt.hashSync(password, 2);
+
     await User.create({
       username,
       email,
@@ -17,9 +17,6 @@ export const signup = async (req, res) => {
     });
   } catch (err) {
     console.log(err);
-    res.status(500).json({
-      status: false,
-      message: err.message || "Internal server error",
-    });
+    next(err);
   }
 };
