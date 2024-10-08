@@ -9,9 +9,10 @@ export default {
       keyframes: {
         wobble: {
           '0%, 100%': { transform: 'translate(0, 0)' },
-          '15%, 45%, 75%': { transform: 'translate(-10px, 10px)' }, // Move bottom-left
-          '30%, 60%': { transform: 'translate(10px, -10px)' }, // Move top-right
-        },
+          '25%': { transform: 'translate(-3px, 3px)' }, // Small move bottom-left
+          '50%': { transform: 'translate(3px, -3px)' }, // Small move top-right
+          '75%': { transform: 'translate(-3px, 3px)' }, // Small move bottom-left again
+        }        
       },
       animation: {
         wobble: 'wobble 0.6s ease',

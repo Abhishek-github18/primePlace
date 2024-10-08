@@ -20,8 +20,15 @@ mongoose
 const app = express();
 app.use(express.json());
 
+
+
+app.use("/api/health", healthRouter);
+app.use("/api/auth", authRouter);
+
+
 app.use((error, req, res, next)=>{
-    const statusCode = error.status || 500;
+    console.log("Inside error middleware", error.message);
+    const statusCode = error.statusCode || 500;
     const message = error.message || "Internal server error";
 
     res.status(statusCode).json({
@@ -29,9 +36,6 @@ app.use((error, req, res, next)=>{
         message
     })
 })
-
-app.use("/api/health", healthRouter);
-app.use("/api/auth", authRouter);
 
 
 app.listen(3000, () => console.log("Listening on port 3000"));

@@ -1,33 +1,105 @@
 import { Link } from "react-router-dom";
 import { useState } from "react";
 import { useRef } from "react";
-import { validateEmail, validateUsername, validatePassword } from "../utils/validation";
+import {
+  validateEmail,
+  validateUsername,
+  validatePassword,
+} from "../utils/validation";
+import { toast } from "react-toastify";
+import { useNavigate } from "react-router-dom";
+import "react-toastify/dist/ReactToastify.css";
+import MessageReactToast from "../utils/MessageReactToast";
 
 const SignUp = () => {
   const [showError, setShowError] = useState(null);
+  const [loading, setLoading] = useState(false);
   const usernameRef = useRef(null);
   const emailRef = useRef(null);
   const passwordRef = useRef(null);
 
-  const handleSubmit = (event) => {
+  const navigate = useNavigate();
+
+  const handleSubmit = async (event) => {
     event.preventDefault();
+    setLoading(true);
 
-    if(!validateEmail(emailRef.current.value)){
-      setShowError("Please enter a valid email address");
-      console.log("Please enter a valid email address");
+    const email = emailRef.current.value;
+    const username = usernameRef.current.value;
+    const password = passwordRef.current.value;
+
+    const validationError = validateInput({ email, username, password });
+    if (validationError) {
+      handleValidationError(validationError);
       return;
     }
 
-    if(!validateUsername(usernameRef.current.value)){
-      setShowError("Please enter a valid username");
-      return;
-    }
+    try {
+      const response = await fetch("/api/auth/signup", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username, password, email }),
+      });
 
-    if(!validatePassword(passwordRef.current.value)){
-      setShowError("Please enter a valid password");
-      return;
+      const data = await response.json();
+      handleResponse(response.ok, data);
+    } catch (error) {
+      handleError(error);
+    } finally {
+      setLoading(false);
     }
-    setShowError(null);
+  };
+
+  const validateInput = ({ email, username, password }) => {
+    if (!validateEmail(email)) {
+      return "Please enter a valid email address";
+    }
+    if (!validateUsername(username)) {
+      return "Please enter a valid username";
+    }
+    // Uncomment when ready for production
+    // if (!validatePassword(password)) {
+    //   return "Please enter a valid password";
+    // }
+    return null; // No validation error
+  };
+
+  const handleValidationError = (message) => {
+    setShowError(message);
+    // Ensure `closeToast` is passed correctly
+    toast(
+      <MessageReactToast message={message} closeToast={() => toast.dismiss()} />
+    );
+    setLoading(false);
+  };
+
+  const handleResponse = (isOk, data) => {
+    if (!isOk || data.success === false) {
+      const errorMessage = data.message || "An unexpected error occurred";
+      setShowError(errorMessage);
+      console.log(errorMessage);
+      toast(
+        <MessageReactToast
+          message={errorMessage}
+          closeToast={() => toast.dismiss()}
+        />
+      );
+    } else {
+      // Successful response logic here
+      toast.success("Account created successfully");
+      navigate("/login");
+    }
+  };
+
+  const handleError = (error) => {
+    const errorMessage = error.message || "An unexpected error occurred";
+    setShowError(errorMessage);
+    toast(
+      <MessageReactToast
+        message={errorMessage}
+        closeToast={() => toast.dismiss()}
+      />
+    );
   };
 
   return (
@@ -66,17 +138,9 @@ const SignUp = () => {
             type="submit"
             className="bg-blue-500 text-white p-4 rounded-lg hover:bg-teal-500 hover:animate-wobble transition duration-300"
           >
-            Submit
+            {loading ? "Loading...." : "Sign Up"}
           </button>
         </form>
-
-        {
-          showError && (
-            <p className="text-red-500 text-center">
-              {showError}
-             </p>
-          )
-        }
 
         {/* Already have an account section */}
         <div className="text-center">
