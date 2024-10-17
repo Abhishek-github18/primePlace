@@ -10,6 +10,7 @@ import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 import "react-toastify/dist/ReactToastify.css";
 import MessageReactToast from "../utils/MessageReactToast";
+import OAuth from "../components/OAuth";
 
 const SignUp = () => {
   const [showError, setShowError] = useState(null);
@@ -150,6 +151,7 @@ const SignUp = () => {
               Login
             </button>
           </Link>
+          <OAuth/>
         </div>
       </div>
     </div>

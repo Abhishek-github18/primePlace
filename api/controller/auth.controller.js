@@ -2,6 +2,7 @@ import bcrypt from "bcrypt";
 import User from "../models/user.model.js";
 import { errorHandler } from "../utils/errorHandler.js";
 import jwt from "jsonwebtoken";
+import GoogleAccountUser from "../models/googleAccountUser.model.js";
 
 export const signup = async (req, res, next) => {
   try {
@@ -10,15 +11,14 @@ export const signup = async (req, res, next) => {
     const { username, email, password } = req.body;
     // let hashedPassword = "";
 
-    const hashedPassword = await bcrypt.hash(password, 10);  // Make sure password is valid before hashing
+    const hashedPassword = await bcrypt.hash(password, 10); // Make sure password is valid before hashing
 
-    
     console.log("hashedPassword", hashedPassword);
 
     const user = await User.create({
       username,
       email,
-      "password": hashedPassword,
+      password: hashedPassword,
     });
     console.log("User created in cosmos db", user);
     res.status(201).json({
@@ -48,7 +48,7 @@ export const signin = async (req, res, next) => {
       if (err) {
         next(errorHandler(500, "Internal server error"));
       }
-     console.log(hash);
+      console.log(hash);
     });
   });
   bcrypt.compare(password, validUser.password, function (err, result) {
@@ -75,4 +75,65 @@ export const signin = async (req, res, next) => {
       }
     }
   });
+};
+
+export const oauth = async (req, res, next) => {
+  const { email, name, image } = req.body;
+
+  console.log("req.body", req.body);
+
+  if (!email || !name || !image) {
+    next(errorHandler(500, "Email, Name and Image are required"));
+    return;
+  }
+
+  try {
+    const user = await GoogleAccountUser.findOne({ email });
+
+    if (user) {
+      console.log("User found in cosmos db", user);
+      const accessToken = jwt.sign(
+        {
+          id: user._id,
+        },
+        process.env.SecretKey,
+        { expiresIn: "1h" }
+      );
+      res.cookie("token", accessToken, { httpOnly: true }).status(200).json({
+        status: true,
+        username: user.name,
+        id: user._id,
+      });
+    } else {
+      const newUser = await GoogleAccountUser.create({
+        name,
+        email,
+        image,
+      });
+
+      if (!newUser) {
+        console.log("Could not able to create a user in db");
+        next(errorHandler(500, "Internal server error"));
+        return;
+      } else {
+        console.log("User created in cosmos db", newUser);
+        const accessToken = jwt.sign(
+          {
+            id: newUser._id,
+          },
+          process.env.SecretKey,
+          { expiresIn: "1h" }
+        );
+        res.cookie("token", accessToken, { httpOnly: true }).status(200).json({
+          status: true,
+          username: newUser.name,
+          id: newUser._id,
+        });
+      }
+    }
+  } catch (error) {
+    console.log("Error", error);
+    next(errorHandler(500, "Internal server error"));
+    return;
+  }
 };
