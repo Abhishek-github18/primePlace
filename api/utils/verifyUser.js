@@ -3,7 +3,10 @@ export const verifyUser = (req, res, next) => {
   console.log("req.cookies", req.cookies);
   try {
     const token = req.cookies.token;
-    if (!token) return res.status(401).json("Not logged in");
+    if (!token) return res.status(401).json({
+      status: false,
+      message: "Unauthorized",
+    });
     jwt.verify(token, process.env.SecretKey, (err, user) => {
       if (err) return res.status(403).json("Token is not valid");
       req.user = user;
