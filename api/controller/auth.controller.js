@@ -68,6 +68,9 @@ export const signin = async (req, res, next) => {
           status: true,
           username: validUser.username,
           id: validUser._id,
+          image: validUser.image,
+          email: validUser.email,
+          oauth: false,
         });
       } else {
         next(errorHandler(401, "Invalid credentials"));
@@ -103,6 +106,9 @@ export const oauth = async (req, res, next) => {
         status: true,
         username: user.name,
         id: user._id,
+        image: user.image,
+        email: user.email,
+        oauth: true,
       });
     } else {
       const newUser = await GoogleAccountUser.create({
@@ -128,6 +134,9 @@ export const oauth = async (req, res, next) => {
           status: true,
           username: newUser.name,
           id: newUser._id,
+          image: newUser.image,
+          email: newUser.email,
+          oauth: true,
         });
       }
     }
@@ -137,3 +146,16 @@ export const oauth = async (req, res, next) => {
     return;
   }
 };
+
+export const signout = (req, res, next) =>{
+  try{
+    res.cookie("token", "", { httpOnly: true }).status(200).json({
+      status: true,
+      message: "Signout successful",
+    });
+  }
+  catch(error){
+    console.error(error);
+    next(errorHandler(500, "Internal server error"));
+  }
+}

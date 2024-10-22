@@ -4,6 +4,7 @@ import Login from './pages/Login';
 import Header from './components/Header';
 import Profile from './pages/Profile';
 import SignUp from './pages/SignUp';
+import PrivateRoute from './components/PrivateRoute'; // Import PrivateRoute
 
 function AppLayout() {
   return (
@@ -29,12 +30,19 @@ function App() {
           element: <Login />
         },
         {
-          path: 'profile',
-          element: <Profile />
-        },
-        {
           path: 'signup',
           element: <SignUp />
+        },
+        // Wrap the Profile route inside PrivateRoute
+        {
+          path: 'profile',
+          element: <PrivateRoute />, // Use PrivateRoute for protecting profile route
+          children: [
+            {
+              path: '',
+              element: <Profile /> // Render Profile if the user is authenticated
+            }
+          ]
         }
       ]
     }
@@ -42,7 +50,5 @@ function App() {
 
   return <RouterProvider router={routes}></RouterProvider>;
 }
-
-
 
 export default App;

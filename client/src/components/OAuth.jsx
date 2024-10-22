@@ -3,6 +3,10 @@ import { app } from "../utils/firebase";
 import { useDispatch } from "react-redux";
 import { signInFailure, signInSuccess } from "../redux/user/userSlice";
 import { useNavigate } from "react-router-dom";
+import "react-toastify/dist/ReactToastify.css";
+import MessageReactToast from "../utils/MessageReactToast";
+import { toast } from "react-toastify";
+
 const OAuth = () => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
@@ -33,13 +37,18 @@ const OAuth = () => {
             });
             if(!response.ok){
                 dispatch(signInFailure("Could not sign in using Google OAuth"));
+                toast.error(<MessageReactToast message={"Could not sign in using Google OAuth"}/>);
                 navigate("/login");
             }else{
                 const data = await response.json();
                 dispatch(signInSuccess(data));
+                toast.success(<MessageReactToast message={"Logged In Successfully"}/>);
                 navigate("/profile");
             }
         } catch (error) {
+            dispatch(signInFailure("Could not sign in using Google OAuth"));
+            toast.error(<MessageReactToast message={"Could not sign in using Google OAuth"}/>);
+            navigate("/login");
             console.log("Could not sign in using Google OAuth", error);
         }
     };

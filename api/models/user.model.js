@@ -17,7 +17,7 @@ const userSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-    avatar: {
+    image: {
       type: String,
       default:"https://img.freepik.com/free-vector/blue-circle-with-white-user_78370-4707.jpg?w=740&t=st=1729142924~exp=1729143524~hmac=198b18798c8e856128fed4706aa8659a51b1641b0c48930f3c35cd1bde49cfaa"
     }
