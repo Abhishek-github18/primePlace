@@ -19,7 +19,7 @@ import {
 } from "../redux/user/userSlice";
 import { toast } from "react-toastify";
 import { validateEmail, validatePassword } from "../utils/validation";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { signOut } from "firebase/auth";
 
 const Profile = () => {
@@ -220,6 +220,11 @@ const Profile = () => {
     }
   };
 
+  const handleEditListing = (listingId) => {
+    navigate("/listing/update-listing/" + listingId);
+    return;
+  }
+
   const handleDeleteListing = async (listingId) => {
     try {
       const response = await fetch("/api/listing/delete/" + listingId, {
@@ -359,7 +364,9 @@ const Profile = () => {
                   className="w-full h-40 object-cover rounded-lg mt-2"
                 />
                 <div className="flex justify-between mt-4">
-                  <button className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition">
+                  <button className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition"
+                  onClick={() => handleEditListing(listing._id)}
+                  >
                     Edit
                   </button>
                   <button
