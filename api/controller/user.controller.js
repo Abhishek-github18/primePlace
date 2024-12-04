@@ -1,6 +1,7 @@
 import User from "../models/user.model.js";
 import GoogleAccountUser from "../models/googleAccountUser.model.js";
 import { errorHandler } from "../utils/errorHandler.js";
+import { Listing } from "../models/listing.model.js";
 export const updateProfile = async (req, res, next) => {
   try {
     const { email, password, image, oauth, id } = req.body;
@@ -116,3 +117,26 @@ export const deleteUser = async (req, res, next) => {
     next(errorHandler(500, "Internal server error"));
   }
 };
+
+export const getUserListings = async (req, res, next)=>{
+  try{
+    if(req.params.id === req.user.id){
+      const listings = await Listing.find({user: req.user.id});
+      res.status(200).json({
+        status: true,
+        message: "Listings fetched successfully",
+        listings
+      });
+    }else{
+      res.status(401).json({
+        status: false,
+        message: "Unauthorized",
+        listings:[]
+      });
+    }
+  }
+  catch(error){
+    console.error(error);
+    next(errorHandler(500, "Internal server error"));
+  }
+}

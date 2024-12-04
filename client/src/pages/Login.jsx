@@ -24,6 +24,7 @@ const Login = () => {
     const password = passwordRef.current.value;
 
     dispatch(signInStart());
+    
 
     try {
       const response = await fetch("/api/auth/signin", {

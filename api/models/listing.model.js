@@ -37,7 +37,7 @@ export const ListingSchema = new mongoose.Schema({
         type: Boolean,
         required: true,
     },
-    price: {
+    regularPrice: {
         type: Number,
         required: true,
     },

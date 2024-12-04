@@ -7,19 +7,32 @@ import {
   uploadBytesResumable,
 } from "firebase/storage";
 import { app } from "../utils/firebase";
-import { deleteUserFails, deleteUserStart, deleteUserSuccess, signOutFailure, signOutStart, signOutSuccess, updateProfileFails, updateProfileSuccess } from "../redux/user/userSlice";
+import {
+  deleteUserFails,
+  deleteUserStart,
+  deleteUserSuccess,
+  signOutFailure,
+  signOutStart,
+  signOutSuccess,
+  updateProfileFails,
+  updateProfileSuccess,
+} from "../redux/user/userSlice";
 import { toast } from "react-toastify";
 import { validateEmail, validatePassword } from "../utils/validation";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { signOut } from "firebase/auth";
 
 const Profile = () => {
   const user = useSelector((state) => state.user.currentUser);
+  const [listingsVisible, setListingsVisible] = useState(false);
+  const [panelVisible, setPanelVisible] = useState(false);
+
   const fileRef = useRef(null);
   const [file, setFile] = useState(null);
   const [filePercentageUpload, setFilePercentageUpload] = useState(null);
   const [fileUrl, setFileUrl] = useState(null);
   const [email, setEmail] = useState(user?.email);
+  const [listings, setListings] = useState([]);
   const passwordRef = useRef(null);
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -124,9 +137,8 @@ const Profile = () => {
     }
   };
 
-  const handleDeleteAccount = async () =>{
-
-    try{
+  const handleDeleteAccount = async () => {
+    try {
       dispatch(deleteUserStart());
       const response = await fetch("/api/user/deleteUser", {
         method: "DELETE",
@@ -135,30 +147,29 @@ const Profile = () => {
         },
         body: JSON.stringify({
           id: user?.id,
-          oauth: user?.oauth
+          oauth: user?.oauth,
         }),
       });
-      if(!response.ok){
+      if (!response.ok) {
         dispatch(deleteUserFails());
         const data = await response.json();
         console.error(data.message);
         toast.error(data.message);
-      }else{
+      } else {
         dispatch(deleteUserSuccess());
         toast.success("Account deleted successfully");
-        navigate('/login');
+        navigate("/login");
       }
-    }catch(error){
+    } catch (error) {
       console.error("error", error);
       dispatch(deleteUserFails());
       toast.error("Some problem with deleting account");
     }
+  };
 
-  }
-
-  const handleSignOut = async () =>{
+  const handleSignOut = async () => {
     dispatch(signOutStart());
-    try{
+    try {
       const response = await fetch("/api/auth/signout", {
         method: "POST",
         headers: {
@@ -166,118 +177,204 @@ const Profile = () => {
         },
         body: JSON.stringify({
           id: user?.id,
-          oauth: user?.oauth
+          oauth: user?.oauth,
         }),
       });
-      if(!response.ok){
+      if (!response.ok) {
         const data = await response.json();
         console.error(data.message);
         toast.error(data.message);
         dispatch(signOutFailure());
-      }else{
+      } else {
         toast.success("Signed out successfully");
-        navigate('/login');
+        navigate("/login");
         dispatch(signOutSuccess());
       }
-    }
-    catch(error){
+    } catch (error) {
       dispatch(signOutFailure());
       console.error("error", error);
       toast.error("Some problem with signing out");
     }
+  };
 
-  }
+  const getListings = async () => {
+    try {
+      const response = await fetch("/api/user/listings/" + user?.id, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      if (!response.ok) {
+        toast.error("Some error while fetching the listings");
+      } else {
+        const data = await response.json();
+        console.log("data", data);
+        setListings(data.listings);
+      }
+      setListingsVisible(!listingsVisible);
+      setPanelVisible(true);
+    } catch (error) {
+      console.error(error);
+      toast.error("Some problem with getting listings");
+    }
+  };
+
+  const handleDeleteListing = async (listingId) => {
+    try {
+      const response = await fetch("/api/listing/delete/" + listingId, {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      if (!response.ok) {
+        toast.error("Some problem with deleting listing");
+      } else {
+        toast.success("Listing deleted successfully");
+        getListings();
+      }
+    } catch (error) {
+      console.error(error);
+      toast.error("Some problem with deleting listing");
+    }
+  };
 
   return (
-<div className="bg-white flex flex-col items-center justify-center mt-16">
-  <div className="w-full max-w-lg p-6 sm:p-12 bg-gray-100 shadow-md rounded-lg">
-    <h1 className="text-3xl font-bold text-blue-900 mb-8 text-center">
-      Update Profile
-    </h1>
-
-    <div className="flex flex-col gap-4">
-      {/* Image Upload Section */}
-      <div className="flex flex-col items-center">
-        <input
-          onChange={(e) => setFile(e.target.files[0])}
-          type="file"
-          ref={fileRef}
-          accept="image/*"
-          hidden
-        />
-        <div className="w-32 h-32">
-          <img
-            src={fileUrl || user?.image}
-            alt="profile_pic"
-            className="w-full h-full rounded-full cursor-pointer border border-gray-300 hover:border-teal-500 hover:border-4 transition-all duration-300"
-            onClick={() => fileRef.current.click()}
-          />
+    <div className="bg-white mt-16 p-4 h-screen">
+      {/* Main Container */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 h-full">
+        {/* Update Profile Section */}
+        <div className="flex flex-col items-center">
+          <div className="w-full max-w-lg p-6 sm:p-12 bg-gray-100 shadow-md rounded-lg">
+            <h1 className="text-3xl font-bold text-blue-900 mb-8 text-center">
+              Update Profile
+            </h1>
+            <div className="flex flex-col gap-4">
+              {/* Profile Picture Upload */}
+              <div className="flex flex-col items-center">
+                <input
+                  type="file"
+                  ref={fileRef}
+                  accept="image/*"
+                  onChange={(e) => setFile(e.target.files[0])}
+                  hidden
+                />
+                <div
+                  className="w-32 h-32 rounded-full border border-gray-300 hover:border-teal-500 hover:border-4 cursor-pointer"
+                  onClick={() => fileRef.current.click()}
+                >
+                  <img
+                    src={fileUrl || user?.image}
+                    alt="profile_pic"
+                    className="w-full h-full rounded-full object-cover"
+                  />
+                </div>
+              </div>
+              {/* User Info */}
+              <input
+                type="text"
+                value={user?.username}
+                disabled
+                className="p-4 border border-gray-300 rounded-lg focus:outline-none focus:border-teal-500"
+              />
+              <input
+                type="text"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                disabled={user?.oauth}
+                className={`p-4 border border-gray-300 rounded-lg focus:outline-none ${
+                  user?.oauth
+                    ? "cursor-not-allowed bg-gray-200"
+                    : "focus:border-teal-500"
+                }`}
+              />
+              <input
+                type="password"
+                placeholder="Enter new password"
+                disabled={user?.oauth}
+                className="p-4 border border-gray-300 rounded-lg focus:outline-none"
+              />
+              <button
+                onClick={handleUpdateProfile}
+                className="bg-blue-500 text-white p-4 rounded-lg hover:bg-teal-500 transition"
+              >
+                Update Profile
+              </button>
+            </div>
+          </div>
+          {/* Buttons */}
+          <div className="flex flex-col gap-4 mt-4">
+            <button
+              onClick={handleDeleteAccount}
+              className="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition"
+            >
+              Delete Account
+            </button>
+            <button
+              onClick={handleSignOut}
+              className="bg-gray-500 text-white px-4 py-2 rounded-lg hover:bg-gray-600 transition"
+            >
+              Sign Out
+            </button>
+            {/* Show Listings Button */}
+            <button
+              onClick={getListings}
+              className="bg-teal-500 text-white px-4 py-2 rounded-lg hover:bg-teal-600 transition"
+            >
+              Show Listings
+            </button>
+          </div>
         </div>
-        {filePercentageUpload && filePercentageUpload < 100 && (
-          <div className="text-teal-500">{`Uploading: ${filePercentageUpload.toFixed(
-            2
-          )}%`}</div>
-        )}
       </div>
 
-      {/* User Information */}
-      <input
-        type="text"
-        value={user?.username}
-        disabled
-        className="p-4 border border-gray-300 rounded-lg focus:outline-none focus:border-teal-500"
-      />
-      <input
-        type="text"
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
-        disabled={user?.oauth}
-        className={`p-4 border border-gray-300 rounded-lg focus:outline-none ${
-          user?.oauth
-            ? "cursor-not-allowed bg-gray-200"
-            : "focus:border-teal-500"
+      {/* Sliding Panel */}
+      <div
+        className={`fixed top-0 right-0 h-full bg-gray-50 shadow-lg transform transition-transform duration-300 ${
+          panelVisible ? "translate-x-0" : "translate-x-full"
         }`}
-      />
-      <input
-        type="password"
-        placeholder="Enter new password"
-        disabled={user?.oauth}
-        ref={passwordRef}
-        className={`p-4 border border-gray-300 rounded-lg focus:outline-none ${
-          user?.oauth
-            ? "cursor-not-allowed bg-gray-200"
-            : "focus:border-teal-500"
-        }`}
-      />
-
-      {/* Update Profile Button */}
-      <button
-        type="button"
-        onClick={handleUpdateProfile}
-        className="bg-blue-500 text-white p-4 rounded-lg hover:bg-teal-500 transition duration-300"
+        style={{ width: "30%", maxWidth: "600px" }} // Adjust size here
       >
-        Update Profile
-      </button>
+        <div className="p-6 h-full flex flex-col">
+          {/* Close Button */}
+          <button
+            onClick={() => setPanelVisible(false)}
+            className="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition self-end"
+          >
+            Close Panel
+          </button>
+
+          {/* Listings Section */}
+          <div className="mt-6 overflow-y-auto flex-1 custom-scrollbar">
+            {listings.map((listing) => (
+              <div
+                key={listing._id}
+                className="mb-4 p-4 border border-gray-300 rounded-lg shadow-sm bg-white"
+              >
+                <h3 className="font-semibold text-blue-800">{listing.title}</h3>
+                <p className="text-gray-600 mt-2">{listing.description}</p>
+                <img
+                  src={listing.imageUrls[0]}
+                  alt="listing_image"
+                  className="w-full h-40 object-cover rounded-lg mt-2"
+                />
+                <div className="flex justify-between mt-4">
+                  <button className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition">
+                    Edit
+                  </button>
+                  <button
+                    className="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition"
+                    onClick={() => handleDeleteListing(listing._id)}
+                  >
+                    Delete
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
     </div>
-  </div>
-
-  {/* Delete Account and Sign Out Buttons */}
-  <div className="flex gap-4 mt-4 mb-8">
-    <button
-      onClick={handleDeleteAccount}
-      className="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition duration-300"
-    >
-      Delete Account
-    </button>
-    <button
-      onClick={handleSignOut}
-      className="bg-gray-500 text-white px-4 py-2 rounded-lg hover:bg-gray-600 transition duration-300"
-    >
-      Sign Out
-    </button>
-  </div>
-</div>
-
   );
 };
 

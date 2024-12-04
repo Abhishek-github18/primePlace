@@ -5,6 +5,7 @@ import Header from './components/Header';
 import Profile from './pages/Profile';
 import SignUp from './pages/SignUp';
 import PrivateRoute from './components/PrivateRoute'; // Import PrivateRoute
+import CreateListing from './pages/CreateListing';
 
 function AppLayout() {
   return (
@@ -41,6 +42,16 @@ function App() {
             {
               path: '',
               element: <Profile /> // Render Profile if the user is authenticated
+            }
+          ]
+        },
+        {
+          path: 'listing',
+          element: <PrivateRoute />, // Use PrivateRoute for protecting profile route
+          children: [
+            {
+              path: '',
+              element: <CreateListing /> // Render Profile if the user is authenticated
             }
           ]
         }

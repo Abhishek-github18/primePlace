@@ -3,14 +3,14 @@ import { errorHandler } from "../utils/errorHandler.js";
 
 export const createListing = async (req, res, next) => {
     try{
-        const { title, description, address, offer, price, discountedPrice, bathrooms, bedrooms, furnished, parking, type, imageUrls, user } = req.body;
+        const { title, description, address, offer, regularPrice, discountedPrice, bathrooms, bedrooms, furnished, parking, type, imageUrls, user } = req.body;
 
         const listing = await Listing.create({
             title,
             description,
             address,
             offer,
-            price,
+            regularPrice,
             discountedPrice,
             bathrooms,
             bedrooms,
@@ -29,6 +29,64 @@ export const createListing = async (req, res, next) => {
             id: listing._id
         });
 
+    }catch(error){
+        console.error(error);
+        next(errorHandler(500, "Internal server error"));
+    }
+}
+
+/**
+ * @api {delete} /api/listing/delete/:id Delete a listing
+ * @apiName DeleteListing
+ * @apiGroup Listing
+ * @apiDescription Delete a listing by its id
+ * @apiParam {String} id The id of the listing to delete
+ * @apiSuccess {Boolean} status True if the listing was deleted, false if not
+ * @apiSuccess {String} message The result message
+ * @apiError {String} message The error message
+ * @apiErrorExample {json} Unautho  rized
+ *    HTTP/1.1 401 Unauthorized
+ *    {
+ *      "status": false,
+ *      "message": "Unauthorized"
+ *    }
+ * @apiErrorExample {json} Internal Server error
+ *    HTTP/1.1 500 Internal Server Error
+ *    {
+ *      "status": false,
+ *      "message": "Internal server error"
+ *    }
+ */
+export const deleteLisitng = async (req, res, next)=>{
+    const listing = await Listing.findById(req.params.id);
+
+    console.log("listing", req.params.id);
+    
+    console.log("listing", listing);
+
+    if(!listing){
+        res.status(404).json({
+            status: false,
+            message: "Listing not found",
+        });
+        return;
+    }
+
+    if(req.user.id !== listing.user){
+        res.status(401).json({
+            status: false,
+            message: "Unauthorized",
+        });
+        return;
+    }
+    
+    try{
+        const deletedListing = await Listing.findByIdAndDelete(req.params.id);
+        console.log("Deleted listing", deletedListing);
+        res.status(200).json({
+            status: true,
+            message: "Listing deleted successfully",
+        });
     }catch(error){
         console.error(error);
         next(errorHandler(500, "Internal server error"));
