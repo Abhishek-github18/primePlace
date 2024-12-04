@@ -2,38 +2,51 @@ import { Listing } from "../models/listing.model.js";
 import { errorHandler } from "../utils/errorHandler.js";
 
 export const createListing = async (req, res, next) => {
-    try{
-        const { title, description, address, offer, regularPrice, discountedPrice, bathrooms, bedrooms, furnished, parking, type, imageUrls, user } = req.body;
+  try {
+    const {
+      title,
+      description,
+      address,
+      offer,
+      regularPrice,
+      discountedPrice,
+      bathrooms,
+      bedrooms,
+      furnished,
+      parking,
+      type,
+      imageUrls,
+      user,
+    } = req.body;
 
-        const listing = await Listing.create({
-            title,
-            description,
-            address,
-            offer,
-            regularPrice,
-            discountedPrice,
-            bathrooms,
-            bedrooms,
-            furnished,
-            parking,
-            type,
-            imageUrls,
-            user
-        });
+    const listing = await Listing.create({
+      title,
+      description,
+      address,
+      offer,
+      regularPrice,
+      discountedPrice,
+      bathrooms,
+      bedrooms,
+      furnished,
+      parking,
+      type,
+      imageUrls,
+      user,
+    });
 
-        console.log(listing);
+    console.log(listing);
 
-        res.status(200).json({
-            status: true,
-            message: "Listing created successfully", 
-            id: listing._id
-        });
-
-    }catch(error){
-        console.error(error);
-        next(errorHandler(500, "Internal server error"));
-    }
-}
+    res.status(200).json({
+      status: true,
+      message: "Listing created successfully",
+      id: listing._id,
+    });
+  } catch (error) {
+    console.error(error);
+    next(errorHandler(500, "Internal server error"));
+  }
+};
 
 /**
  * @api {delete} /api/listing/delete/:id Delete a listing
@@ -57,38 +70,61 @@ export const createListing = async (req, res, next) => {
  *      "message": "Internal server error"
  *    }
  */
-export const deleteLisitng = async (req, res, next)=>{
-    const listing = await Listing.findById(req.params.id);
+export const deleteLisitng = async (req, res, next) => {
+  const listing = await Listing.findById(req.params.id);
 
-    console.log("listing", req.params.id);
-    
-    console.log("listing", listing);
+  console.log("listing", req.params.id);
 
-    if(!listing){
-        res.status(404).json({
-            status: false,
-            message: "Listing not found",
-        });
-        return;
-    }
+  console.log("listing", listing);
 
-    if(req.user.id !== listing.user){
-        res.status(401).json({
-            status: false,
-            message: "Unauthorized",
-        });
-        return;
+  if (!listing) {
+    res.status(404).json({
+      status: false,
+      message: "Listing not found",
+    });
+    return;
+  }
+
+  if (req.user.id !== listing.user) {
+    res.status(401).json({
+      status: false,
+      message: "Unauthorized",
+    });
+    return;
+  }
+
+  try {
+    const deletedListing = await Listing.findByIdAndDelete(req.params.id);
+    console.log("Deleted listing", deletedListing);
+    res.status(200).json({
+      status: true,
+      message: "Listing deleted successfully",
+    });
+  } catch (error) {
+    console.error(error);
+    next(errorHandler(500, "Internal server error"));
+  }
+};
+
+
+
+export const getListing = async (req, res, next) => {
+  try {
+    const listing = await Listing.find({ _id: req.params.id });
+    if (!listing) {
+      res.status(404).json({
+        status: false,
+        message: "Listing not found",
+      });
+      return;
     }
-    
-    try{
-        const deletedListing = await Listing.findByIdAndDelete(req.params.id);
-        console.log("Deleted listing", deletedListing);
-        res.status(200).json({
-            status: true,
-            message: "Listing deleted successfully",
-        });
-    }catch(error){
-        console.error(error);
-        next(errorHandler(500, "Internal server error"));
-    }
-}
+    res.status(200).json({
+      status: true,
+      message: "Listings fetched successfully",
+      listings: listing,
+    });
+  } catch (error) {
+    console.error(error);
+    next(errorHandler(500, "Internal server error"));
+  }
+};

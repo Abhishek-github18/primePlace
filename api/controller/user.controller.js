@@ -140,3 +140,40 @@ export const getUserListings = async (req, res, next)=>{
     next(errorHandler(500, "Internal server error"));
   }
 }
+
+export const updateListing = async (req, res, next) => {
+  const listing = await Listing.findById(req.params.id);
+
+  if (!listing) {
+    res.status(404).json({
+      status: false,
+      message: "Listing not found",
+    });
+    return;
+  }
+
+  if (req.user.id !== listing.user) {
+    res.status(401).json({
+      status: false,
+      message: "Unauthorized",
+    });
+    return;
+  }
+  try {
+    const updatedListing = await Listing.findByIdAndUpdate(
+      req.params.id,
+      req.body,
+      {
+        new: true,
+      }
+    );
+    res.status(200).json({
+      status: true,
+      message: "Listing updated successfully",
+      listing: updatedListing,
+    });
+  } catch (error) {
+    console.error(error);
+    next(errorHandler(500, "Internal server error"));
+  }
+};
