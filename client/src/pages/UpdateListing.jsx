@@ -8,7 +8,7 @@ import { useEffect, useState } from "react";
 import { app } from "../utils/firebase";
 import { toast } from "react-toastify";
 import { useSelector } from "react-redux";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 
 const UpdateListing = () => {
   const [files, setFiles] = new useState([]);
@@ -16,7 +16,8 @@ const UpdateListing = () => {
   const [uploading, setUploading] = useState(false);
   const id = useSelector((state) => state?.user?.currentUser?.id);
   const params = useParams();
-  const [listing, setListing] = useState();
+  // const [listing, setListing] = useState();
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     title: "",
     description: "",
@@ -32,10 +33,10 @@ const UpdateListing = () => {
     imageUrls: [],
   });
 
-  console.log(formData);
+  // console.log(formData);
   const handleImageUpload = async (e) => {
     // const files = e.target.files;
-    console.log(files);
+    // console.log(files);
     e.preventDefault();
     const promises = [];
     setUploading(true);
@@ -96,14 +97,14 @@ const UpdateListing = () => {
   const handleDelete = (e) => {
     e.preventDefault();
     const index = parseInt(e.target.value, 10); // Convert index to a number
-    console.log("index", index);
+    // console.log("index", index);
 
     setFormData((prevFormData) => ({
       ...prevFormData,
       imageUrls: prevFormData.imageUrls.filter((url, i) => i !== index),
     }));
 
-    console.log("Updated formData:", formData);
+    // console.log("Updated formData:", formData);
   };
 
   const handleChange = (e) => {
@@ -137,7 +138,7 @@ const UpdateListing = () => {
     }
     // console.log(id);
     try {
-      const response = await fetch("/api/listing/create", {
+      const response = await fetch(`/api/user/update-listing/${params.listingId}`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -149,31 +150,33 @@ const UpdateListing = () => {
       });
 
       const data = await response.json();
-      console.log(data);
+      // console.log(data);
       if (data.status == true) {
-        toast.success("Listing created successfully");
-        // navigate("/profile");
+        toast.success("Listing updated successfully");
+        navigate("/profile");
       } else {
         toast.error(data.message);
       }
     } catch (error) {
       console.error("error", error);
-      toast.error("Some problem with creating listing");
+      toast.error("Some problem with updating listing");
     }
   };
   const getListingDetails = async () => {
-    console.log(params.listingId);  
+    // console.log(params.listingId);  
     try {
       const response = await fetch(
         `/api/listing/${params.listingId}`
       );
       const data = await response.json();
-      console.log(data);
+      // console.log(data);
       if (data.status == false) {
         toast.error(data.message);
         return;
       }
-      setListing(data.listings[0]);
+      setFormData(data.listings[0])
+
+      // console.log(formData);
     } catch (error) {
       console.error(error);
       toast.error("Some problem with getting listing details");
@@ -198,7 +201,7 @@ const UpdateListing = () => {
               minLength={10}
               maxLength={60}
               className="w-full p-3 border border-gray-300 rounded focus:outline-none focus:border-teal-500"
-              value={formData.name}
+              value={formData.title}
               onChange={handleChange}
             />
           </div>
@@ -365,7 +368,7 @@ const UpdateListing = () => {
               className="w-full sm:w-auto bg-blue-500 text-white p-3 rounded hover:bg-blue-600"
               disabled={uploading}
             >
-              Create Listing
+              Update Listing
             </button>
           </div>
         </form>

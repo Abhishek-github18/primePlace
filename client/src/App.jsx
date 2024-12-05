@@ -7,6 +7,7 @@ import SignUp from './pages/SignUp';
 import PrivateRoute from './components/PrivateRoute'; // Import PrivateRoute
 import CreateListing from './pages/CreateListing';
 import UpdateListing from './pages/UpdateListing';
+import Listing from './pages/Listing';
 
 function AppLayout() {
   return (
@@ -66,7 +67,17 @@ function App() {
             }
           ]
 
-        }
+        },
+        {
+          path:'listings/:listingId',
+          element: <PrivateRoute />,
+          children:[
+            {
+              path:'',
+              element:<Listing/>
+            }
+          ]
+        },  
       ]
     }
   ]);

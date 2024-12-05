@@ -19,8 +19,7 @@ import {
 } from "../redux/user/userSlice";
 import { toast } from "react-toastify";
 import { validateEmail, validatePassword } from "../utils/validation";
-import { useNavigate } from "react-router-dom";
-import { signOut } from "firebase/auth";
+import { Link, useNavigate } from "react-router-dom";
 
 const Profile = () => {
   const user = useSelector((state) => state.user.currentUser);
@@ -356,6 +355,7 @@ const Profile = () => {
                 key={listing._id}
                 className="mb-4 p-4 border border-gray-300 rounded-lg shadow-sm bg-white"
               >
+              <Link to={`/listings/${listing._id}`}>
                 <h3 className="font-semibold text-blue-800">{listing.title}</h3>
                 <p className="text-gray-600 mt-2">{listing.description}</p>
                 <img
@@ -376,8 +376,9 @@ const Profile = () => {
                     Delete
                   </button>
                 </div>
+              </Link>
               </div>
-            ))}
+            ) )}
           </div>
         </div>
       </div>
