@@ -70,13 +70,13 @@ function App() {
         },
         {
           path:'listings/:listingId',
-          element: <PrivateRoute />,
-          children:[
-            {
-              path:'',
-              element:<Listing/>
-            }
-          ]
+          element: <Listing />,
+          // children:[
+          //   {
+          //     path:'',
+          //     element:<Listing/>
+          //   }
+          // ]
         },  
       ]
     }

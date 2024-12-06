@@ -177,3 +177,26 @@ export const updateListing = async (req, res, next) => {
     next(errorHandler(500, "Internal server error"));
   }
 };
+
+export const getUserDetails = async (req, res, next) =>{
+  const id = req.params.id;
+
+  try {
+    const user = await User.findById(id);
+    if (!user) {
+      res.status(404).json({
+        status: false,
+        message: "User not found",
+      });
+      return;
+    }
+    res.status(200).json({
+      status: true,
+      message: "User details fetched successfully",
+      user
+    })
+  } catch (error) {
+    console.error(error);
+    next(errorHandler(500, "Internal server error"));   
+  }
+}
