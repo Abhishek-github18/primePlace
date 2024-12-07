@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
+import ListingItem from "../components/ListingItem";
 
 const Search = () => {
   const [sideBarData, setSideBarData] = useState({
@@ -44,6 +45,10 @@ const Search = () => {
     e.preventDefault();
     console.log(sideBarData);
     navigate(`/search?${new URLSearchParams(sideBarData).toString()}`);
+    fetchData();
+  };
+
+  const fetchData = async () => {
     try {
       const response = await fetch(
         `/api/listing/search?${new URLSearchParams(sideBarData).toString()}`,
@@ -69,7 +74,8 @@ const Search = () => {
     }));
     console.log(urlParams.get("searchTerm"));
     console.log(sideBarData);
-  }, []);
+    fetchData();
+  }, [location.search]);
 
   return (
     <div className="flex flex-wrap gap-6 p-4 md:flex-nowrap">
@@ -200,9 +206,18 @@ const Search = () => {
       </div>
 
       {/* Listing Result Container */}
-      <div className="w-full md:w-2/3 bg-white p-6 rounded-lg shadow-md">
+      <div className="w-full md:w-2/3 bg-white p-6 rounded-lg shadow-md flex">
         <h4 className="text-lg font-bold mb-4">Listing Results:</h4>
-        {/* Add your result rendering logic here */}
+        <br />
+        <div className="flex flex-wrap">
+          {listing && listing.length > 0 ? (
+            listing.map((listing) => (
+              <ListingItem listing={listing} key={listing._id} />
+            ))
+          ) : (
+            <p>No listing found</p>
+          )}
+        </div>
       </div>
     </div>
   );

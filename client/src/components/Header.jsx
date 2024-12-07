@@ -8,11 +8,12 @@ const Header = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const navigate = useNavigate();
   const handleSearch = (e) =>{
+    
     e.preventDefault();
-
     const urlParams = new URLSearchParams(window.location.search);
     urlParams.set("searchTerm", searchTerm);
     const searhQuery = urlParams.toString();
+    console.log('searhQuery', searhQuery);
     navigate(`/search?${searhQuery}`);
   }
 
