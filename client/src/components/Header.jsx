@@ -1,9 +1,26 @@
+import { useEffect, useState } from "react";
 import { FaSearch } from "react-icons/fa";
 import { useSelector } from "react-redux";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 const Header = () => {
   const user = useSelector((state) => state.user.currentUser);
+  const [searchTerm, setSearchTerm] = useState("");
+  const navigate = useNavigate();
+  const handleSearch = (e) =>{
+    e.preventDefault();
+
+    const urlParams = new URLSearchParams(window.location.search);
+    urlParams.set("search", searchTerm);
+    const searhQuery = urlParams.toString();
+    navigate(`/search?${searhQuery}`);
+  }
+
+  useEffect(()=>{
+    const urlParams = new URLSearchParams(window.location.search);
+    setSearchTerm(urlParams.get("search"));
+
+  }, [location.search])
 
   return (
     <header className="bg-white shadow-md py-4">
@@ -14,11 +31,13 @@ const Header = () => {
             <span className="text-blue-900">Place</span>
           </h1>
         </Link>
-        <form className="flex border border-blue-500 rounded-lg overflow-hidden">
+        <form onSubmit={handleSearch} className="flex border border-blue-500 rounded-lg overflow-hidden">
           <input
             className="md:px-4 py-2 focus:outline-none"
             type="text"
+            value={searchTerm}
             placeholder="Find a property..."
+            onChange={(e)=> setSearchTerm(e.target.value)}
           />
           <button className="bg-teal-500 px-4 py-2">
             <FaSearch className="text-white" />

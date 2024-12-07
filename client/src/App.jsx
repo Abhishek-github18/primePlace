@@ -8,6 +8,7 @@ import PrivateRoute from './components/PrivateRoute'; // Import PrivateRoute
 import CreateListing from './pages/CreateListing';
 import UpdateListing from './pages/UpdateListing';
 import Listing from './pages/Listing';
+import Search from './pages/Search';
 
 function AppLayout() {
   return (
@@ -35,6 +36,10 @@ function App() {
         {
           path: 'signup',
           element: <SignUp />
+        },
+        {
+          path:'search',
+          element:<Search/>
         },
         // Wrap the Profile route inside PrivateRoute
         {

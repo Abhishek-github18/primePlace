@@ -128,6 +128,8 @@ export const getListing = async (req, res, next) => {
 };
 
 export const getAllListing = async (req, res, next) => {
+  const limit = req.query.limit || 9;
+
   // Offer filter
   let offer;
   if (req.query.offer === "true") {
@@ -182,13 +184,13 @@ try{
     parking,
     furnished,
     type,
-  }).sort({ [sort]: order }); 
+  }).sort({ [sort]: order }).limit(limit); 
 
   res.status(200).json({
     status: true,
     message: "Listings fetched successfully",
     listings: Listings,
-  }); 
+  });   
 }catch(error){
   console.error(error);
   next(errorHandler(500, "Internal server error"));
