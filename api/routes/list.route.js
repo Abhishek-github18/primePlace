@@ -4,7 +4,7 @@ import { createListing, deleteLisitng, getAllListing, getListing } from '../cont
 
 const listRouter = express.Router();
 
-listRouter.get('/get', getAllListing);
+listRouter.get('/search', getAllListing);
 listRouter.get('/:id', getListing);
 listRouter.post('/create', verifyUser, createListing);
 listRouter.delete('/delete/:id', verifyUser, deleteLisitng);

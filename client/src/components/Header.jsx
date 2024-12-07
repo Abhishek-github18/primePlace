@@ -11,14 +11,14 @@ const Header = () => {
     e.preventDefault();
 
     const urlParams = new URLSearchParams(window.location.search);
-    urlParams.set("search", searchTerm);
+    urlParams.set("searchTerm", searchTerm);
     const searhQuery = urlParams.toString();
     navigate(`/search?${searhQuery}`);
   }
 
   useEffect(()=>{
     const urlParams = new URLSearchParams(window.location.search);
-    setSearchTerm(urlParams.get("search"));
+    setSearchTerm(urlParams.get("searchTerm"));
 
   }, [location.search])
 

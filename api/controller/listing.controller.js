@@ -171,7 +171,7 @@ export const getAllListing = async (req, res, next) => {
 
   const sort = req.query.sort || "createdAt"; // Default sort by createdAt
   const order = req.query.order || "desc"; // Default order by desc
-console.log({
+console.log({ 
   offer,
   parking,
   furnished,
