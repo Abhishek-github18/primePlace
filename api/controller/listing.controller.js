@@ -106,8 +106,6 @@ export const deleteLisitng = async (req, res, next) => {
   }
 };
 
-
-
 export const getListing = async (req, res, next) => {
   try {
     const listing = await Listing.find({ _id: req.params.id });
@@ -127,4 +125,73 @@ export const getListing = async (req, res, next) => {
     console.error(error);
     next(errorHandler(500, "Internal server error"));
   }
+};
+
+export const getAllListing = async (req, res, next) => {
+  // Offer filter
+  let offer;
+  if (req.query.offer === "true") {
+    offer = true; // Only listings with offer = true
+  } else if (req.query.offer === "false") {
+    offer = false; // Only listings with offer = false
+  } else {
+    offer = { $in: [false, true] }; // Include all listings
+  }
+
+  // Parking filter
+  let parking;
+  if (req.query.parking === "true") {
+    parking = true; // Only listings with parking = true
+  } else if (req.query.parking === "false") {
+    parking = false; // Only listings with parking = false
+  } else {
+    parking = { $in: [false, true] }; // Include all listings
+  }
+
+  let furnished;
+  if (req.query.furnished === "true") {
+    furnished = true; // Only listings with furnished = true
+  } else if (req.query.furnished === "false") {
+    furnished = false; // Only listings with furnished = false
+  } else {
+    furnished = { $in: [false, true] }; // Include all listings
+  }
+
+  
+  let type;
+  if (req.query.type === "rent") {
+    type = "rent"; // Only listings with type = rent
+  } else if (req.query.type === "sale") {
+    type = "sale"; // Only listings with type = sale
+  } else {
+    type = { $in: ["rent", "sale"] }; // Include all listings
+  }
+
+  const sort = req.query.sort || "createdAt"; // Default sort by createdAt
+  const order = req.query.order || "desc"; // Default order by desc
+console.log({
+  offer,
+  parking,
+  furnished,
+  type
+});
+try{
+  const Listings = await Listing.find({
+    title: { $regex: req.query.title || '', $options: "i" },
+    offer,
+    parking,
+    furnished,
+    type,
+  }).sort({ [sort]: order }); 
+
+  res.status(200).json({
+    status: true,
+    message: "Listings fetched successfully",
+    listings: Listings,
+  }); 
+}catch(error){
+  console.error(error);
+  next(errorHandler(500, "Internal server error"));
+}
+
 };
