@@ -70,156 +70,159 @@ const Search = () => {
     const urlParams = new URLSearchParams(window.location.search);
     setSideBarData((prevState) => ({
       ...prevState,
-      searchTerm: urlParams.get("searchTerm") || "", // Default to an empty string
+      searchTerm: urlParams.get("searchTerm") || "",
+      type: urlParams.get("type") || "all",
+    furnished: urlParams.get("furnished") === "true" || false,
+    offer: urlParams.get("offer") === "true" || false,
+    parking: urlParams.get("parking") === "true" || false,
+    sort: urlParams.get("sort") || "price",
+    order: urlParams.get("order") || "asc",
     }));
-    console.log(urlParams.get("searchTerm"));
-    console.log(sideBarData);
     fetchData();
   }, [location.search]);
 
   return (
-    <div className="flex flex-wrap gap-6 p-4 md:flex-nowrap">
-      {/* Search Container */}
-      <div className="w-full md:w-1/3 bg-gray-100 p-6 rounded-lg shadow-md">
-        <h4 className="text-lg font-bold mb-4">Search your favorite place</h4>
-        <form className="space-y-4" onSubmit={handleSubmit}>
-          {/* Search Input */}
-          <input
-            type="text"
-            placeholder="Search with text"
-            className="w-full p-2 border border-gray-300 rounded-md"
-            onChange={(e) =>
-              setSideBarData({ ...sideBarData, searchTerm: e.target.value })
-            }
-            value={sideBarData.searchTerm || ""} // Ensure it's always a string
-          />
-
-          {/* Type Options */}
-          <div>
-            <span className="font-medium">Type:</span>
-            <div className="flex items-center space-x-4 mt-2">
-              <label className="flex items-center">
-                <input
-                  type="radio"
-                  id="all"
-                  name="type"
-                  value="all"
-                  className="mr-2"
-                  onChange={handleChange}
-                  checked={sideBarData.type === "all"}
-                />
-                Rent & Sell
-              </label>
-              <label className="flex items-center">
-                <input
-                  type="radio"
-                  id="rent"
-                  name="type"
-                  value="rent"
-                  className="mr-2"
-                  onChange={handleChange}
-                  checked={sideBarData.type === "rent"}
-                />
-                Rent
-              </label>
-              <label className="flex items-center">
-                <input
-                  type="radio"
-                  id="sale"
-                  name="type"
-                  value="sale"
-                  className="mr-2"
-                  onChange={handleChange}
-                  checked={sideBarData.type === "sale"}
-                />
-                Sell
-              </label>
-            </div>
+    <div className="flex flex-wrap gap-8 p-6 md:flex-nowrap">
+    {/* Search Container */}
+    <div className="w-full md:w-1/3 bg-white p-8 rounded-xl shadow-lg">
+      <h4 className="text-2xl font-bold text-gray-800 mb-6">Search for Your Favorite Place</h4>
+      <form className="space-y-6" onSubmit={handleSubmit}>
+        {/* Search Input */}
+        <input
+          type="text"
+          placeholder="Search for location or property"
+          className="w-full p-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
+          onChange={(e) =>
+            setSideBarData({ ...sideBarData, searchTerm: e.target.value })
+          }
+          value={sideBarData.searchTerm || ""}
+        />
+  
+        {/* Type Options */}
+        <div>
+          <span className="font-semibold text-gray-700">Property Type:</span>
+          <div className="flex items-center space-x-6 mt-4">
+            <label className="flex items-center text-gray-600">
+              <input
+                type="radio"
+                id="all"
+                name="type"
+                value="all"
+                className="mr-2"
+                onChange={handleChange}
+                checked={sideBarData.type === "all"}
+              />
+              Rent & Sell
+            </label>
+            <label className="flex items-center text-gray-600">
+              <input
+                type="radio"
+                id="rent"
+                name="type"
+                value="rent"
+                className="mr-2"
+                onChange={handleChange}
+                checked={sideBarData.type === "rent"}
+              />
+              Rent
+            </label>
+            <label className="flex items-center text-gray-600">
+              <input
+                type="radio"
+                id="sale"
+                name="type"
+                value="sale"
+                className="mr-2"
+                onChange={handleChange}
+                checked={sideBarData.type === "sale"}
+              />
+              Sale
+            </label>
           </div>
-
-          {/* Offer */}
-          <div className="flex items-center">
-            <input
-              type="checkbox"
-              id="offer"
-              name="offer"
-              className="mr-2"
-              onChange={handleChange}
-              checked={sideBarData.offer}
-            />
-            <span>Offer</span>
-          </div>
-
-          {/* Amenities */}
-          <div>
-            <span className="font-medium">Amenities:</span>
-            <div className="flex items-center space-x-4 mt-2">
-              <label className="flex items-center">
-                <input
-                  type="checkbox"
-                  id="parking"
-                  name="parking"
-                  className="mr-2"
-                  onChange={handleChange}
-                  checked={sideBarData.parking}
-                />
-                Parking
-              </label>
-              <label className="flex items-center">
-                <input
-                  type="checkbox"
-                  id="furnished"
-                  name="furnished"
-                  className="mr-2"
-                  onChange={handleChange}
-                  checked={sideBarData.furnished}
-                />
-                Furnished
-              </label>
-            </div>
-          </div>
-
-          {/* Sort Options */}
-          <div>
-            <span className="font-medium">Sort:</span>
-            <select
-              className="w-full p-2 border border-gray-300 rounded-md mt-2"
-              onChange={handleChange}
-              value={sideBarData.sort}
-              name="sort"
-            >
-              <option value="desc">Price High to Low</option>
-              <option value="asc">Price Low to High</option>
-              <option value="newest">Latest</option>
-              <option value="oldest">Oldest</option>
-            </select>
-          </div>
-
-          {/* Submit Button */}
-          <button
-            type="submit"
-            className="w-full bg-blue-500 text-white py-2 rounded-md font-semibold hover:bg-blue-600"
-          >
-            Search
-          </button>
-        </form>
-      </div>
-
-      {/* Listing Result Container */}
-      <div className="w-full md:w-2/3 bg-white p-6 rounded-lg shadow-md flex">
-        <h4 className="text-lg font-bold mb-4">Listing Results:</h4>
-        <br />
-        <div className="flex flex-wrap">
-          {listing && listing.length > 0 ? (
-            listing.map((listing) => (
-              <ListingItem listing={listing} key={listing._id} />
-            ))
-          ) : (
-            <p>No listing found</p>
-          )}
         </div>
+  
+        {/* Offer Checkbox */}
+        <div className="flex items-center text-gray-600">
+          <input
+            type="checkbox"
+            id="offer"
+            name="offer"
+            className="mr-3"
+            onChange={handleChange}
+            checked={sideBarData.offer}
+          />
+          <span>Show Offers</span>
+        </div>
+  
+        {/* Amenities */}
+        <div>
+          <span className="font-semibold text-gray-700">Amenities:</span>
+          <div className="flex items-center space-x-6 mt-4">
+            <label className="flex items-center text-gray-600">
+              <input
+                type="checkbox"
+                id="parking"
+                name="parking"
+                className="mr-2"
+                onChange={handleChange}
+                checked={sideBarData.parking}
+              />
+              Parking
+            </label>
+            <label className="flex items-center text-gray-600">
+              <input
+                type="checkbox"
+                id="furnished"
+                name="furnished"
+                className="mr-2"
+                onChange={handleChange}
+                checked={sideBarData.furnished}
+              />
+              Furnished
+            </label>
+          </div>
+        </div>
+  
+        {/* Sort Options */}
+        <div>
+          <span className="font-semibold text-gray-700">Sort By:</span>
+          <select
+            className="w-full p-3 border border-gray-300 rounded-lg shadow-sm mt-4 focus:outline-none focus:ring-2 focus:ring-blue-400"
+            onChange={handleChange}
+            name="sort"
+          >
+            <option value="desc">Price: High to Low</option>
+            <option value="asc">Price: Low to High</option>
+            <option value="newest">Newest Listings</option>
+            <option value="oldest">Oldest Listings</option>
+          </select>
+        </div>
+  
+        {/* Submit Button */}
+        <button
+          type="submit"
+          className="w-full bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 transition duration-300"
+        >
+          Search
+        </button>
+      </form>
+    </div>
+  
+    {/* Listing Result Container */}
+    <div className="w-full md:w-2/3 bg-white p-8 rounded-xl shadow-lg">
+      <h4 className="text-2xl font-bold text-gray-800 mb-6">Listing Results:</h4>
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        {listing && listing.length > 0 ? (
+          listing.map((listing) => (
+            <ListingItem listing={listing} key={listing._id} />
+          ))
+        ) : (
+          <p className="text-gray-500">No listings found</p>
+        )}
       </div>
     </div>
+  </div>
+  
   );
 };
 

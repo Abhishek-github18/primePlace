@@ -53,7 +53,7 @@ function App() {
           ]
         },
         {
-          path: 'listing',
+          path: 'listings/create-listing',
           element: <PrivateRoute />, // Use PrivateRoute for protecting profile route
           children: [
             {
