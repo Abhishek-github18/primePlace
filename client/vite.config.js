@@ -6,8 +6,10 @@ export default defineConfig({
   server: {
     proxy: {
       "/api": {
-        target: "http://localhost:3000",
-        secure: false,
+        target: "https://primeplace-pr6i.onrender.com", // Replace with the correct remote API URL
+        changeOrigin: true, // Ensure the Host header is correctly set
+        secure: true, // If the target server uses HTTPS, set to true
+        rewrite: (path) => path.replace(/^\/api/, ''), // Optional: strip /api from the request URL if necessary
       },
     },
   },

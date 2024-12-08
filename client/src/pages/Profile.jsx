@@ -29,6 +29,7 @@ const Profile = () => {
   const passwordRef = useRef(null);
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
   useEffect(() => {
     console.log("file", file);
@@ -97,7 +98,7 @@ const Profile = () => {
       return;
     }
     try {
-      const response = await fetch("/api/user/updateprofile", {
+      const response = await fetch(`${BASE_URL}/api/user/updateprofile`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -133,7 +134,7 @@ const Profile = () => {
  
   const getListings = async () => {
     try {
-      const response = await fetch("/api/user/listings/" + user?.id, {
+      const response = await fetch(`${BASE_URL}/api/user/listings/` + user?.id, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
@@ -161,7 +162,7 @@ const Profile = () => {
 
   const handleDeleteListing = async (listingId) => {
     try {
-      const response = await fetch("/api/listing/delete/" + listingId, {
+      const response = await fetch(`${BASE_URL}/api/listing/delete/` + listingId, {
         method: "DELETE",
         headers: {
           "Content-Type": "application/json",

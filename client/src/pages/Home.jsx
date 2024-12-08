@@ -8,6 +8,8 @@ const Home = () => {
   const [saleListing, setSaleListing] = useState([]);
   const [rentListing, setRentListing] = useState([]);
   const navigate = useNavigate();
+  const BASE_URL = import.meta.env.VITE_API_BASE_URL;
+
 
   useEffect(() => {
     fetchOfferListing();
@@ -17,7 +19,7 @@ const Home = () => {
 
   const fetchOfferListing = async () => {
     try {
-      const response = await fetch("/api/listing/search?offer=true");
+      const response = await fetch(`${BASE_URL}/api/listing/search?offer=true`);
       const data = await response.json();
       setOfferListing(data.listings);
     } catch (error) {
@@ -27,7 +29,7 @@ const Home = () => {
 
   const fetchSaleListing = async () => {
     try {
-      const response = await fetch("/api/listing/search?type=sale");
+      const response = await fetch(`${BASE_URL}/api/listing/search?type=sale`);
       const data = await response.json();
       setSaleListing(data.listings);
     } catch (error) {
@@ -37,7 +39,7 @@ const Home = () => {
 
   const fetchRentListing = async () => {
     try {
-      const response = await fetch("/api/listing/search?type=rent");
+      const response = await fetch(`${BASE_URL}/api/listing/search?type=rent`);
       const data = await response.json();
       setRentListing(data.listings);
     } catch (error) {

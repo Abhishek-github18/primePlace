@@ -17,6 +17,7 @@ const Login = () => {
   const usernameRef = useRef(null);
   const passwordRef = useRef(null);
   const navigate = useNavigate();
+  const BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -27,7 +28,7 @@ const Login = () => {
     
 
     try {
-      const response = await fetch("/api/auth/signin", {
+      const response = await fetch(`${BASE_URL}/api/auth/signin`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

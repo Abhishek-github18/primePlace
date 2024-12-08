@@ -16,10 +16,12 @@ const Listing = () => {
   const [listing, setListing] = useState();
   const [contactLandlord, setContactLandlord] = useState(false);
   const user = useSelector((state) => state.user.currentUser);
+  const BASE_URL = import.meta.env.VITE_API_BASE_URL;
+
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch(`/api/listing/${params.listingId}`);
+        const response = await fetch(`${BASE_URL}/api/listing/${params.listingId}`);
         if (!response.ok) {
           toast.error("Something went wrong while fetching listing details");
         } else {

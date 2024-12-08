@@ -13,6 +13,7 @@ const Search = () => {
     searchTerm: "",
     order: "asc",
   });
+  const BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
   const [listing, setListing] = useState();
 
@@ -51,7 +52,7 @@ const Search = () => {
   const fetchData = async () => {
     try {
       const response = await fetch(
-        `/api/listing/search?${new URLSearchParams(sideBarData).toString()}`,
+        `${BASE_URL}/api/listing/search?${new URLSearchParams(sideBarData).toString()}`,
         {
           method: "GET",
         }

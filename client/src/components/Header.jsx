@@ -21,6 +21,9 @@ const Header = () => {
     navigate(`/search?${searhQuery}`);
   };
 
+  const BASE_URL = import.meta.env.VITE_API_BASE_URL;
+
+
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
     setSearchTerm(urlParams.get("searchTerm"));
@@ -29,7 +32,7 @@ const Header = () => {
   const handleDeleteAccount = async () => {
     try {
       dispatch(deleteUserStart());
-      const response = await fetch("/api/user/deleteUser", {
+      const response = await fetch(`${BASE_URL}/api/user/deleteUser`, {
         method: "DELETE",
         headers: {
           "Content-Type": "application/json",
@@ -59,7 +62,7 @@ const Header = () => {
   const handleSignOut = async () => {
     dispatch(signOutStart());
     try {
-      const response = await fetch("/api/auth/signout", {
+      const response = await fetch(`${BASE_URL}/api/auth/signout`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

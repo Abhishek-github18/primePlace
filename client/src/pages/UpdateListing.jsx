@@ -32,6 +32,7 @@ const UpdateListing = () => {
     regularPrice: 0,
     imageUrls: [],
   });
+  const BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
   // console.log(formData);
   const handleImageUpload = async (e) => {
@@ -166,7 +167,7 @@ const UpdateListing = () => {
     // console.log(params.listingId);  
     try {
       const response = await fetch(
-        `/api/listing/${params.listingId}`
+        `${BASE_URL}/api/listing/${params.listingId}`
       );
       const data = await response.json();
       // console.log(data);

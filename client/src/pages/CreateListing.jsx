@@ -14,6 +14,8 @@ const CreateListing = () => {
   const [imageUploadError, setImageUploadError] = new useState(false);
   const [uploading, setUploading] = useState(false);
   const id = useSelector((state) => state?.user?.currentUser?.id)
+  const BASE_URL = import.meta.env.VITE_API_BASE_URL;
+
 
   const [formData, setFormData] = useState({
     title: "",
@@ -135,7 +137,7 @@ const CreateListing = () => {
     }
     // console.log(id);
     try{
-      const response = await fetch("/api/listing/create", {
+      const response = await fetch(`${BASE_URL}/api/listing/create`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

@@ -10,6 +10,8 @@ import { toast } from "react-toastify";
 const OAuth = () => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
+    const BASE_URL = import.meta.env.VITE_API_BASE_URL;
+
     const handleGoogleAuth = async () => {
         try{
             // Sign in using google oauth
@@ -24,7 +26,7 @@ const OAuth = () => {
 
             console.log(user.displayName, user.email, user.providerData[0].photoURL);
 
-            const response = await fetch("/api/auth/google", {
+            const response = await fetch(`${BASE_URL}/api/auth/google`, {
                 method:"POST",
                 headers:{
                     "Content-Type":"application/json"
