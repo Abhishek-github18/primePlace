@@ -3,6 +3,8 @@ export const verifyUser = (req, res, next) => {
   console.log("req.cookies", req.cookies);
   try {
     const token = req.cookies.token;
+    console.log("token", token);
+
     if (!token) return res.status(401).json({
       status: false,
       message: "Unauthorized",

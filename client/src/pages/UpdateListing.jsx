@@ -148,6 +148,8 @@ const UpdateListing = () => {
           ...formData,
           user: id,
         }),
+        credentials: "include", // Ensure cookies are included in cross-origin requests
+
       });
 
       const data = await response.json();
@@ -167,7 +169,10 @@ const UpdateListing = () => {
     // console.log(params.listingId);  
     try {
       const response = await fetch(
-        `${BASE_URL}/api/listing/${params.listingId}`
+        `${BASE_URL}/api/listing/${params.listingId}`,{
+          credentials: "include", // Ensure cookies are included in cross-origin requests
+
+        }
       );
       const data = await response.json();
       // console.log(data);

@@ -19,7 +19,10 @@ const Home = () => {
 
   const fetchOfferListing = async () => {
     try {
-      const response = await fetch(`${BASE_URL}/api/listing/search?offer=true`);
+      const response = await fetch(`${BASE_URL}/api/listing/search?offer=true`,{
+        credentials: "include", // Ensure cookies are included in cross-origin requests
+
+      });
       const data = await response.json();
       setOfferListing(data.listings);
     } catch (error) {
@@ -29,7 +32,10 @@ const Home = () => {
 
   const fetchSaleListing = async () => {
     try {
-      const response = await fetch(`${BASE_URL}/api/listing/search?type=sale`);
+      const response = await fetch(`${BASE_URL}/api/listing/search?type=sale`,{
+        credentials: "include", // Ensure cookies are included in cross-origin requests
+
+      });
       const data = await response.json();
       setSaleListing(data.listings);
     } catch (error) {
@@ -39,7 +45,10 @@ const Home = () => {
 
   const fetchRentListing = async () => {
     try {
-      const response = await fetch(`${BASE_URL}/api/listing/search?type=rent`);
+      const response = await fetch(`${BASE_URL}/api/listing/search?type=rent`,{
+        credentials: "include", // Ensure cookies are included in cross-origin requests
+
+      });
       const data = await response.json();
       setRentListing(data.listings);
     } catch (error) {

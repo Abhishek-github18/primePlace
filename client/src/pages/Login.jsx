@@ -34,6 +34,8 @@ const Login = () => {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({ username, password }),
+        credentials: "include", // Ensure cookies are included in cross-origin requests
+
       });
       if (!response.ok) {
         const error = await response.json();

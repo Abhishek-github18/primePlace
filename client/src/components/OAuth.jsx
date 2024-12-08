@@ -35,7 +35,9 @@ const OAuth = () => {
                     email: user.email,
                     name: user.displayName,
                     image: user.providerData[0].photoURL
-                })
+                }),
+                credentials: "include", // Ensure cookies are included in cross-origin requests
+
             });
             if(!response.ok){
                 dispatch(signInFailure("Could not sign in using Google OAuth"));

@@ -55,7 +55,10 @@ const Search = () => {
         `${BASE_URL}/api/listing/search?${new URLSearchParams(sideBarData).toString()}`,
         {
           method: "GET",
-        }
+          credentials: "include", // Ensure cookies are included in cross-origin requests
+
+        }// Ensure cookies are included in cross-origin requests
+
       );
 
       const data = await response.json();

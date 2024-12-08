@@ -15,13 +15,17 @@ const Listing = () => {
   const params = useParams();
   const [listing, setListing] = useState();
   const [contactLandlord, setContactLandlord] = useState(false);
-  const user = useSelector((state) => state.user.currentUser);
+  const user = useSelector((state) => state?.user?.currentUser);
   const BASE_URL = import.meta.env.VITE_API_BASE_URL;
+
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch(`${BASE_URL}/api/listing/${params.listingId}`);
+        const response = await fetch(`${BASE_URL}/api/listing/${params.listingId}`,{
+          credentials: "include", // Ensure cookies are included in cross-origin requests
+
+        });
         if (!response.ok) {
           toast.error("Something went wrong while fetching listing details");
         } else {
@@ -35,6 +39,15 @@ const Listing = () => {
     };
     fetchData();
   }, []);
+
+  const handleContactLandLord = () =>{
+    if(!user){
+    toast.error("You need to sign in to contact the landlord");
+    return;
+    }else{
+      setContactLandlord(true);
+    }
+  }
 
   return (
     <div className="max-w-7xl mx-auto p-4">
@@ -158,7 +171,7 @@ const Listing = () => {
       {!contactLandlord && listing && user?.id !== listing.user && (
         <div className="flex justify-center items-center mt-6">
           <button
-            onClick={() => setContactLandlord(true)}
+            onClick={handleContactLandLord}
             className="px-6 py-3 bg-gradient-to-r from-teal-500 to-blue-500 text-white text-lg font-medium rounded-lg shadow-md hover:shadow-lg hover:from-teal-600 hover:to-blue-600 transition-all duration-300 transform hover:-translate-y-1"
           >
             Contact Landlord

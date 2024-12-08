@@ -146,6 +146,8 @@ const CreateListing = () => {
           ...formData,
           user: id
         }),
+        credentials: "include", // Ensure cookies are included in cross-origin requests
+
       });
 
       const data = await response.json();

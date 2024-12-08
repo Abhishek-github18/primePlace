@@ -110,6 +110,8 @@ const Profile = () => {
           oauth: user?.oauth,
           id: user?.id,
         }),
+        credentials: "include", // Ensure cookies are included in cross-origin requests
+
       });
 
       if (!response.ok) {
@@ -139,6 +141,8 @@ const Profile = () => {
         headers: {
           "Content-Type": "application/json",
         },
+        credentials: "include", // Ensure cookies are included in cross-origin requests
+
       });
       if (!response.ok) {
         toast.error("Some error while fetching the listings");
@@ -167,6 +171,8 @@ const Profile = () => {
         headers: {
           "Content-Type": "application/json",
         },
+        credentials: "include", // Ensure cookies are included in cross-origin requests
+
       });
       if (!response.ok) {
         toast.error("Some problem with deleting listing");
@@ -267,7 +273,7 @@ const Profile = () => {
       className={`fixed top-0 right-0 h-full bg-white shadow-lg transition-transform duration-300 ${
         panelVisible ? "translate-x-0" : "translate-x-full"
       }`}
-      style={{ width: "30%", maxWidth: "600px" }}
+      style={{ width: "95%", maxWidth: "600px" }}
     >
       <div className="p-6 h-full flex flex-col">
         <button

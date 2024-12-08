@@ -1,17 +1,21 @@
 import { useEffect, useState } from "react";
 import PropTypes from "prop-types";
 import { Link } from "react-router-dom";
-
 const Contact = ({ listing, setContactLandlord }) => {
   const [user, setUser] = useState(null);
   const [message, setMessage] = useState("");
   const BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
+  
+
 
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        const response = await fetch(`${BASE_URL}/api/user/${listing.user}`);
+        const response = await fetch(`${BASE_URL}/api/user/${listing.user}`,{
+          credentials: "include", // Ensure cookies are included in cross-origin requests
+
+      });
         if (!response.ok) throw new Error("Failed to fetch user data");
         const data = await response.json();
         setUser(data.user);

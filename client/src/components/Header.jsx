@@ -41,6 +41,8 @@ const Header = () => {
           id: user?.id,
           oauth: user?.oauth,
         }),
+        credentials: "include", // Ensure cookies are included in cross-origin requests
+
       });
       if (!response.ok) {
         dispatch(deleteUserFails());
@@ -71,6 +73,8 @@ const Header = () => {
           id: user?.id,
           oauth: user?.oauth,
         }),
+        credentials: "include", // Ensure cookies are included in cross-origin requests
+
       });
       if (!response.ok) {
         const data = await response.json();

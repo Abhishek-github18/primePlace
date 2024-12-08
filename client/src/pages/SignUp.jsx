@@ -41,6 +41,8 @@ const SignUp = () => {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ username, password, email }),
+        credentials: "include", // Ensure cookies are included in cross-origin requests
+
       });
 
       const data = await response.json();
