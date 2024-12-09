@@ -64,14 +64,22 @@ export const signin = async (req, res, next) => {
           process.env.SecretKey,
           { expiresIn: "1h" }
         );
-        res.cookie("token", token, { httpOnly: true }).status(200).json({
-          status: true,
-          username: validUser.username,
-          id: validUser._id,
-          image: validUser.image,
-          email: validUser.email,
-          oauth: false,
-        });
+        res
+          .cookie("token", token, {
+            httpOnly: true, // Prevents client-side JS access
+            secure: true, // Required for HTTPS
+            sameSite: "None", // Allows cross-origin requests
+            maxAge: 24 * 60 * 60 * 1000, // 1 day
+          })
+          .status(200)
+          .json({
+            status: true,
+            username: validUser.username,
+            id: validUser._id,
+            image: validUser.image,
+            email: validUser.email,
+            oauth: false,
+          });
       } else {
         next(errorHandler(401, "Invalid credentials"));
         return;
@@ -102,14 +110,22 @@ export const oauth = async (req, res, next) => {
         process.env.SecretKey,
         { expiresIn: "1h" }
       );
-      res.cookie("token", accessToken, { httpOnly: true }).status(200).json({
-        status: true,
-        username: user.name,
-        id: user._id,
-        image: user.image,
-        email: user.email,
-        oauth: true,
-      });
+      res
+        .cookie("token", accessToken, {
+          httpOnly: true, // Prevents client-side JS access
+          secure: true, // Required for HTTPS
+          sameSite: "None", // Allows cross-origin requests
+          maxAge: 24 * 60 * 60 * 1000, // 1 day
+        })
+        .status(200)
+        .json({
+          status: true,
+          username: user.name,
+          id: user._id,
+          image: user.image,
+          email: user.email,
+          oauth: true,
+        });
     } else {
       const newUser = await GoogleAccountUser.create({
         name,
@@ -130,14 +146,22 @@ export const oauth = async (req, res, next) => {
           process.env.SecretKey,
           { expiresIn: "1h" }
         );
-        res.cookie("token", accessToken, { httpOnly: true }).status(200).json({
-          status: true,
-          username: newUser.name,
-          id: newUser._id,
-          image: newUser.image,
-          email: newUser.email,
-          oauth: true,
-        });
+        res
+          .cookie("token", accessToken, {
+            httpOnly: true, // Prevents client-side JS access
+            secure: true, // Required for HTTPS
+            sameSite: "None", // Allows cross-origin requests
+            maxAge: 24 * 60 * 60 * 1000, // 1 day
+          })
+          .status(200)
+          .json({
+            status: true,
+            username: newUser.name,
+            id: newUser._id,
+            image: newUser.image,
+            email: newUser.email,
+            oauth: true,
+          });
       }
     }
   } catch (error) {
@@ -147,15 +171,22 @@ export const oauth = async (req, res, next) => {
   }
 };
 
-export const signout = (req, res, next) =>{
-  try{
-    res.cookie("token", "", { httpOnly: true }).status(200).json({
-      status: true,
-      message: "Signout successful",
-    });
-  }
-  catch(error){
+export const signout = (req, res, next) => {
+  try {
+    res
+      .cookie("token", "", {
+        httpOnly: true, // Prevents client-side JS access
+        secure: true, // Required for HTTPS
+        sameSite: "None", // Allows cross-origin requests
+        maxAge: 24 * 60 * 60 * 1000, // 1 day
+      })
+      .status(200)
+      .json({
+        status: true,
+        message: "Signout successful",
+      });
+  } catch (error) {
     console.error(error);
     next(errorHandler(500, "Internal server error"));
   }
-}
+};
