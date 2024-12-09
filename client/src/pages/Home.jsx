@@ -2,14 +2,18 @@ import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 import ListingItem from "../components/ListingItem";
+import ListingItemSkeleton from "../components/ListingItemSkeleton";
 
 const Home = () => {
   const [offerListing, setOfferListing] = useState([]);
   const [saleListing, setSaleListing] = useState([]);
   const [rentListing, setRentListing] = useState([]);
+  const [loadingOfferListing, setLoadingOfferListing] = useState(true);
+  const [loadingSaleListing, setLoadingSaleListing] = useState(true);
+  const [loadingRentListing, setLoadingRentListing] = useState(true);
+
   const navigate = useNavigate();
   const BASE_URL = import.meta.env.VITE_API_BASE_URL;
-
 
   useEffect(() => {
     fetchOfferListing();
@@ -19,12 +23,16 @@ const Home = () => {
 
   const fetchOfferListing = async () => {
     try {
-      const response = await fetch(`${BASE_URL}/api/listing/search?offer=true`,{
-        credentials: "include", // Ensure cookies are included in cross-origin requests
-
-      });
+      setLoadingOfferListing(true);
+      const response = await fetch(
+        `${BASE_URL}/api/listing/search?offer=true`,
+        {
+          credentials: "include", // Ensure cookies are included in cross-origin requests
+        }
+      );
       const data = await response.json();
       setOfferListing(data.listings);
+      setLoadingOfferListing(false);
     } catch (error) {
       toast.error("Something went wrong while fetching offer listings.");
     }
@@ -32,12 +40,12 @@ const Home = () => {
 
   const fetchSaleListing = async () => {
     try {
-      const response = await fetch(`${BASE_URL}/api/listing/search?type=sale`,{
+      const response = await fetch(`${BASE_URL}/api/listing/search?type=sale`, {
         credentials: "include", // Ensure cookies are included in cross-origin requests
-
       });
       const data = await response.json();
       setSaleListing(data.listings);
+      setLoadingSaleListing(false);
     } catch (error) {
       toast.error("Something went wrong while fetching sale listings.");
     }
@@ -45,12 +53,12 @@ const Home = () => {
 
   const fetchRentListing = async () => {
     try {
-      const response = await fetch(`${BASE_URL}/api/listing/search?type=rent`,{
+      const response = await fetch(`${BASE_URL}/api/listing/search?type=rent`, {
         credentials: "include", // Ensure cookies are included in cross-origin requests
-
       });
       const data = await response.json();
       setRentListing(data.listings);
+      setLoadingRentListing(false);
     } catch (error) {
       toast.error("Something went wrong while fetching rent listings.");
     }
@@ -97,11 +105,18 @@ const Home = () => {
         </div>
         <div className="relative">
           <div className="flex space-x-4 overflow-x-auto custom-scrollbar scrollbar-hide">
-            {offerListing.length > 0 ? (
+            {loadingOfferListing ? (
+              // Render skeleton loaders during the loading state
+              Array.from({ length: 4 }).map((_, index) => (
+                <ListingItemSkeleton key={index} />
+              ))
+            ) : offerListing.length > 0 ? (
+              // Render actual listings once data is loaded
               offerListing.map((listing) => (
                 <ListingItem key={listing._id} listing={listing} />
               ))
             ) : (
+              // Fallback message when there are no offers
               <p className="text-gray-500">No offers available.</p>
             )}
           </div>
@@ -122,13 +137,22 @@ const Home = () => {
           </button>
         </div>
         <div className="grid gap-4 md:gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
-          {rentListing.length > 0 ? (
-            rentListing.map((listing) => (
-              <ListingItem key={listing._id} listing={listing} />
-            ))
-          ) : (
-            <p className="text-gray-500">No rent listings available.</p>
-          )}
+          {
+            loadingRentListing ? (
+              // Render skeleton loaders during the loading state
+              Array.from({ length: 4 }).map((_, index) => (
+                <ListingItemSkeleton key={index} />
+              ))
+            ) : rentListing.length > 0 ? (
+              // Render actual listings once data is loaded
+              rentListing.map((listing) => (
+                <ListingItem key={listing._id} listing={listing} />
+              ))
+            ) : (
+              // Fallback message when there are no rent listings
+              <p className="text-gray-500">No rent listings available.</p>
+            )
+          }
         </div>
       </section>
 
@@ -146,13 +170,22 @@ const Home = () => {
           </button>
         </div>
         <div className="grid gap-4 md:gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
-          {saleListing.length > 0 ? (
+        {
+          loadingSaleListing ? (
+            // Render skeleton loaders during the loading state
+            Array.from({ length: 4 }).map((_, index) => (
+              <ListingItemSkeleton key={index} />
+            ))
+          ) : saleListing.length > 0 ? (
+            // Render actual listings once data is loaded
             saleListing.map((listing) => (
               <ListingItem key={listing._id} listing={listing} />
             ))
           ) : (
+            // Fallback message when there are no sale listings
             <p className="text-gray-500">No sale listings available.</p>
-          )}
+          )
+        }
         </div>
       </section>
     </div>
