@@ -6,6 +6,7 @@ import healthRouter from "./routes/health.route.js" ;
 import authRouter from "./routes/auth.route.js";
 import userRouter from "./routes/user.route.js";
 import listRouter from "./routes/list.route.js";
+import cors from "cors";
 
 dotenv.config();
 
@@ -23,26 +24,7 @@ mongoose
 const app = express();
 app.use(express.json());
 app.use(cookieParser());
-
-app.use((req, res, next) => {
-  const allowedOrigins = ['http://localhost:5173', 'https://prime-place.vercel.app'];
-  const origin = req.headers.origin;
-
-  if (allowedOrigins.includes(origin)) {
-    res.setHeader('Access-Control-Allow-Origin', origin);
-    res.setHeader('Access-Control-Allow-Credentials', 'true'); // Allow cookies with credentials
-  }
-  
-  res.setHeader('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
-  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, UPDATE, OPTIONS');
-
-  // Handle preflight requests
-  if (req.method === 'OPTIONS') {
-    return res.status(200).end();
-  }
-
-  next();
-});
+app.use(cors());
 
 
 
