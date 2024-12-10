@@ -24,7 +24,13 @@ mongoose
 const app = express();
 app.use(express.json());
 app.use(cookieParser());
-app.use(cors());
+app.use(
+  cors({
+    origin: ["http://localhost:5173", "https://prime-place.vercel.app"], // Allow these origins
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"], // Allowed HTTP methods
+    credentials: true, // Allow cookies and authentication headers
+  })
+);
 
 
 
