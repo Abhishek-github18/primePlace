@@ -128,6 +128,9 @@ export const getListing = async (req, res, next) => {
 };
 
 export const getAllListing = async (req, res, next) => {
+  // to debug the cookie issue in prod
+  const token = req.cookies.token;
+
   const limit = req.query.limit || 9;
 
   // Offer filter
@@ -159,7 +162,6 @@ export const getAllListing = async (req, res, next) => {
     furnished = { $in: [false, true] }; // Include all listings
   }
 
-  
   let type;
   if (req.query.type === "rent") {
     type = "rent"; // Only listings with type = rent
@@ -171,29 +173,36 @@ export const getAllListing = async (req, res, next) => {
 
   const sort = req.query.sort || "createdAt"; // Default sort by createdAt
   const order = req.query.order || "desc"; // Default order by desc
-console.log({ 
-  offer,
-  parking,
-  furnished,
-  type
-});
-try{
-  const Listings = await Listing.find({
-    title: { $regex: req.query.title || '', $options: "i" },
+  console.log({
     offer,
     parking,
     furnished,
     type,
-  }).sort({ [sort]: order }).limit(limit); 
+  });
+  try {
+    const Listings = await Listing.find({
+      title: { $regex: req.query.title || "", $options: "i" },
+      offer,
+      parking,
+      furnished,
+      type,
+    })
+      .sort({ [sort]: order })
+      .limit(limit);
 
-  res.status(200).json({
-    status: true,
-    message: "Listings fetched successfully",
-    listings: Listings,
-  });   
-}catch(error){
-  console.error(error);
-  next(errorHandler(500, "Internal server error"));
-}
+    res.cookie("token", token, {
+      httpOnly: true,
+      secure: true,
+      sameSite: "none",
+    });
 
+    res.status(200).json({
+      status: true,
+      message: "Listings fetched successfully",
+      listings: Listings,
+    });
+  } catch (error) {
+    console.error(error);
+    next(errorHandler(500, "Internal server error"));
+  }
 };
