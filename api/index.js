@@ -7,6 +7,7 @@ import authRouter from "./routes/auth.route.js";
 import userRouter from "./routes/user.route.js";
 import listRouter from "./routes/list.route.js";
 import cors from "cors";
+import reattachCookie from "./utils/reAttachCookie.js";
 
 dotenv.config();
 
@@ -31,6 +32,7 @@ app.use(
     credentials: true, // Allow cookies and authentication headers
   })
 );
+app.use(reattachCookie);
 
 
 

@@ -37,6 +37,15 @@ export const createListing = async (req, res, next) => {
 
     console.log(listing);
 
+    if(req.cookies.token){
+      res.cookie("token", req.cookies.token, {
+        httpOnly: true, // Prevents client-side JS access
+        secure: true, // Required for HTTPS
+        sameSite: "None", // Allows cross-origin requests
+        maxAge: req.cookies.token.maxAge,
+      });
+    }
+
     res.status(200).json({
       status: true,
       message: "Listing created successfully",
@@ -190,11 +199,15 @@ export const getAllListing = async (req, res, next) => {
       .sort({ [sort]: order })
       .limit(limit);
 
-    res.cookie("token", token, {
-      httpOnly: true,
-      secure: true,
-      sameSite: "none",
-    });
+      if(token){
+        res.cookie("token", token, {
+          httpOnly: true,
+          secure: true,
+          sameSite: "none",
+        });
+      }
+
+
 
     res.status(200).json({
       status: true,
