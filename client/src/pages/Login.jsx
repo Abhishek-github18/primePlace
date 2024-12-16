@@ -12,7 +12,7 @@ import {
 import OAuth from "../components/OAuth";
 
 const Login = () => {
-  const loading = useSelector((state) => state.loading);
+  const loading = useSelector((state) => state.user.loading); // Ensure it's user loading
   const dispatch = useDispatch();
   const usernameRef = useRef(null);
   const passwordRef = useRef(null);
@@ -26,7 +26,6 @@ const Login = () => {
 
     dispatch(signInStart());
     
-
     try {
       const response = await fetch(`${BASE_URL}/api/auth/signin`, {
         method: "POST",
@@ -35,7 +34,6 @@ const Login = () => {
         },
         body: JSON.stringify({ username, password }),
         credentials: "include", // Ensure cookies are included in cross-origin requests
-
       });
       if (!response.ok) {
         const error = await response.json();
@@ -65,7 +63,14 @@ const Login = () => {
   };
 
   return (
-    <div className="bg-white flex items-center justify-center mt-16">
+    <div className="bg-white flex items-center justify-center mt-16 relative">
+      {/* Loading Overlay */}
+      {loading && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="loader border-t-transparent border-4 border-white w-16 h-16 rounded-full animate-spin"></div>
+        </div>
+      )}
+
       <div className="w-full max-w-lg p-6 sm:p-12 bg-gray-100 shadow-md rounded-lg">
         <h1 className="text-3xl font-bold text-blue-900 mb-8 text-center">
           Login
@@ -90,21 +95,22 @@ const Login = () => {
           <button
             type="submit"
             className="bg-blue-500 text-white p-4 rounded-lg hover:bg-teal-500 hover:animate-wobble transition duration-300"
+            disabled={loading} // Prevent double submission
           >
-            {loading ? "Loading...." : "Login"}
+            {loading ? "Loading..." : "Login"}
           </button>
         </form>
 
         {/* Already have an account section */}
         <div className="text-center">
-          <p className="text-gray-600 mb-4">Dont have an account?</p>
+          <p className="text-gray-600 mb-4">Don't have an account?</p>
           <Link to="/signup">
             <button className="bg-teal-500 text-white py-2 px-6 rounded-lg hover:bg-teal-600 transition duration-300">
               Signup
             </button>
           </Link>
         </div>
-        <OAuth/>
+        <OAuth />
       </div>
     </div>
   );

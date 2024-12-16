@@ -54,7 +54,7 @@ const CreateListing = () => {
           console.error(error);
           setImageUploadError(true);
           toast.error("Something went wrong while uploading images");
-        });
+        }  );
       setImageUploadError(false);
       setUploading(false);
     } else {
